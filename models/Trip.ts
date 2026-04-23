@@ -25,6 +25,14 @@ const tripSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    photos: [
+      {
+        fileName: String,
+        url: String,
+        publicId: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true },
 );

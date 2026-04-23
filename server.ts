@@ -2,10 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-// const nodemon = require('nodemon');
-const feedRoutes = require('./routes/tripRoutes');
 
 dotenv.config();
+
+// const nodemon = require('nodemon');
+const feedRoutes = require('./routes/tripRoutes');
 
 const app = express();
 
