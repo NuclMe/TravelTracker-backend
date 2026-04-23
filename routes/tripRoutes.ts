@@ -6,6 +6,9 @@ const {
   getTrip,
   getTrips,
   deletePhoto,
+  addPlace,
+  updatePlace,
+  deletePlace,
 } = require('../controllers/tripController');
 
 const router = express.Router();
@@ -30,5 +33,8 @@ router.post('/uploadPhotos/:tripId', upload.array('photos', 10), uploadPhotos); 
 router.get('/getTrips', getTrips); // Get all trips
 router.get('/:tripId', getTrip); // Get trip details with photos
 router.delete('/:tripId/photo/:photoIndex', deletePhoto); // Delete a photo from trip
+router.post('/trips/:tripId/places', addPlace);
+router.patch('/trips/:tripId/places/:placeId', updatePlace);
+router.delete('/trips/:tripId/places/:placeId', deletePlace);
 
 module.exports = router;

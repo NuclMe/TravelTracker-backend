@@ -129,6 +129,142 @@ exports.getTrips = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+exports.addPlace = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { tripId } = req.params;
+    const { name, address, category, lat, lng } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ message: 'Invalid trip id' });
+    }
+
+    if (
+      !name ||
+      !address ||
+      !category ||
+      lat === undefined ||
+      lng === undefined
+    ) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const newPlace = {
+      name,
+      address,
+      category,
+      lat: Number(lat),
+      lng: Number(lng),
+    };
+
+    trip.places.push(newPlace);
+    const updatedTrip = await trip.save();
+
+    return res.status(200).json({
+      message: 'Place added successfully',
+      trip: updatedTrip,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      message: 'Failed to add place',
+      error: err.message,
+    });
+  }
+};
+
+exports.updatePlace = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { tripId, placeId } = req.params;
+    const { name, address, category, status, lat, lng } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ message: 'Invalid trip id' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(placeId)) {
+      return res.status(400).json({ message: 'Invalid place id' });
+    }
+
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const place = trip.places.id(placeId);
+    if (!place) {
+      return res.status(404).json({ message: 'Place not found' });
+    }
+
+    if (name !== undefined) place.name = name;
+    if (address !== undefined) place.address = address;
+    if (category !== undefined) place.category = category;
+    if (status !== undefined) place.status = status;
+    if (lat !== undefined) place.lat = Number(lat);
+    if (lng !== undefined) place.lng = Number(lng);
+
+    const updatedTrip = await trip.save();
+
+    return res.status(200).json({
+      message: 'Place updated successfully',
+      trip: updatedTrip,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      message: 'Failed to update place',
+      error: err.message,
+    });
+  }
+};
+
+exports.deletePlace = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { tripId, placeId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ message: 'Invalid trip id' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(placeId)) {
+      return res.status(400).json({ message: 'Invalid place id' });
+    }
+
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+      return res.status(404).json({ message: 'Trip not found' });
+    }
+
+    const place = trip.places.id(placeId);
+    if (!place) {
+      return res.status(404).json({ message: 'Place not found' });
+    }
+
+    place.remove();
+    const updatedTrip = await trip.save();
+
+    return res.status(200).json({
+      message: 'Place deleted successfully',
+      trip: updatedTrip,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      message: 'Failed to delete place',
+      error: err.message,
+    });
+  }
+};
+
 exports.deletePhoto = async (
   req: Request,
   res: Response,
